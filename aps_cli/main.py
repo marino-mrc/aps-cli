@@ -37,14 +37,14 @@ def port_number_validation_callback(value: int):
         raise typer.BadParameter("Only values between 0 and 15 are allowed")
     return value
 
-@app.command(name="set-port")
+@app.command(name="port-set")
 def set_port(ctx: typer.Context, port_number: Annotated[int, typer.Argument(callback=port_number_validation_callback)], 
         port_status: Annotated[str, typer.Argument(callback=port_status_validation_callback)]):
     """
     Set the status of a given port to ON or OFF
     """
     utils.print_msg("Setting port {} to {}".format(port_number, port_status), True, ctx.obj.debug)
-    res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['set-port']['url']),
+    res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['port-set']['url']),
         username=ctx.obj.username, password=ctx.obj.password, params={'port': port_number, 'status': port_status})
     #print(res.json())
     response = res.json()
