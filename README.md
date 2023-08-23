@@ -13,6 +13,67 @@ Some interesting features:
   * Various output voltage are supported, no need to change the schematic
 
 ## Example usage
+### Export env variables needed for connection and authentication:
+```bash
+$ export APS_URL="http://192.168.191.47"
+$ export APS_USERNAME="admin"
+$ export APS_PASSWORD="microchip"
+```
 
-## Some images of the APS board 
+### Check the status of all ports:
+```bash
+$ aps port-status
+┏━━━━━━┳━━━━━━━━┓
+┃ Port ┃ Status ┃
+┡━━━━━━╇━━━━━━━━┩
+│ 0    │ ON     │
+│ 1    │ OFF    │
+│ 2    │ ON     │
+│ 3    │ ON     │
+│ 4    │ ON     │
+│ 5    │ ON     │
+│ 6    │ ON     │
+│ 7    │ OFF    │
+│ 8    │ ON     │
+│ 9    │ ON     │
+│ 10   │ ON     │
+│ 11   │ ON     │
+│ 12   │ ON     │
+│ 13   │ ON     │
+│ 14   │ ON     │
+│ 15   │ ON     │
+└──────┴────────┘
+```
 
+### Check the status of a single port:
+```bash
+$ aps port-status 4
+┏━━━━━━┳━━━━━━━━┓
+┃ Port ┃ Status ┃
+┡━━━━━━╇━━━━━━━━┩
+│ 4    │ ON     │
+└──────┴────────┘
+```
+
+### Change the status of a port:
+```bash
+$ aps port-set 1 off
+Status: OFF
+```
+
+### Check the network configuration:
+```bash
+$ aps config net-show
+┏━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃ Param    ┃ Value             ┃
+┡━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ ip       │ 192.168.191.47    │
+│ gw       │ 192.168.191.1     │
+│ subnet   │ 255.255.255.0     │
+│ dns1     │ 192.168.191.1     │
+│ dns2     │ 0.0.0.0           │
+│ mac      │ 44:b7:d0:a8:23:85 │
+│ dhcp     │ true              │
+│ hostname │ MCHPBOARD_E       │
+└──────────┴───────────────────┘
+```
