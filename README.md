@@ -6,7 +6,7 @@ Some interesting features:
 * The board supports up to 16 devices
 * It can be used through the aps-cli or through a touchscreen display I added to the board
 * It supports _virtually_ all SBCs and Mini PCs with a voltage between 5 and 24V
-* It's fully compatible with [MaaS](https://maas.io/) by Canonical. This basically means you can provision MiniPC clusters in an efficient manner
+* It's fully compatible with [MaaS](https://maas.io/) by Canonical. This basically means you can provision MiniPC clusters in an efficient manner and deploy application on it using [Juju](https://juju.is/)
 * It's completely modular, and this basically means that the board can be easily customized without buying a new PCB based on your needs:
   * Removing the touchscreen is possible and this permits reducing the global cost of the board
   * The minimum amount of supported devices is 8, but you can add another module and the APS can manage 16 boards!
