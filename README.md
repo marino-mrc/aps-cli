@@ -77,3 +77,5 @@ $ aps config net-show
 │ hostname │ MCHPBOARD_E       │
 └──────────┴───────────────────┘
 ```
+## A picture of the old version of the APS board
+![eps_v3 2_2](https://github.com/marino-mrc/aps-cli/assets/1167190/9fd55f41-1324-4f38-ba61-8253e6ca95d8)
