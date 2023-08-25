@@ -1,16 +1,19 @@
 # Advanced Power Supply (APS) CLI
 ## What's the Advanced Power Supply
-The Advanced Power Supply is an electronic board I built from scratch based on a PIC32MZ microcontroller for powering clusters of Single Board Computers or Mini PCs.
+The Advanced Power Supply is an electronic board I built from scratch based on a PIC32MZ microcontroller for powering clusters of single-board computers or Mini PCs.
 
 Some interesting features:
-* The board supports up to 16 devices
-* It can be used through the aps-cli or through a touchscreen display I added to the board
-* It supports _virtually_ all SBCs and Mini PCs with a voltage between 5 and 24V
-* It's fully compatible with [MaaS](https://maas.io/) by Canonical. This basically means you can provision MiniPC clusters in an efficient manner and deploy application on it using [Juju](https://juju.is/)
-* It's completely modular, and this basically means that the board can be easily customized without buying a new PCB based on your needs:
-  * Removing the touchscreen is possible and this permits reducing the global cost of the board
-  * The minimum amount of supported devices is 8, but you can add another module and the APS can manage 16 boards!
+* Supports up to 16 devices (Mini PCs or SBCs)
+* It can be used through the aps-cli or through an optional touchscreen display I added
+* It supports _virtually_ all SBCs and Mini PCs with an operating voltage between 5 and 24V. The power depends on the power supply you use. I successfully tested it with 1KW shared between 8 Mini PC with 32GB RAM per node and an 8 core CPU)
+* It's fully compatible with [MaaS](https://maas.io/) and [Juju](https://juju.is/) by Canonical. This basically means you can provision clusters of Mini PCs in an efficient manner and deploy applications on them using MaaS and Juju. The power management is handled by MaaS and the APS is fully compatible.
+* It's completely modular, hence the board can be easily customized without buying a new PCB based on your needs:
+  * Removing the touchscreen is possible and this reduces the global cost of the board
+  * Each "Switch Board" supports up to 8 devices (see the diagram below), but you can have 2 Switch Boards and the APS can manage up to 16 boards!
   * Various output voltages are supported, no need to change the schematic
+
+![diagram_aps](https://github.com/marino-mrc/aps-cli/assets/1167190/9569da2c-9f7b-4d79-aafa-a8bbe3e53be7)
+
 
 ## Example usage
 ### Export env variables needed for connection and authentication:
