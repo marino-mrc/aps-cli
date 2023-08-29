@@ -44,10 +44,16 @@ def do_get(url, username=None, password=None, headers=None, params=None):
             print("Response: ", response.content)
         raise typer.Exit(1)
 
-def do_post(url, headers=None, data=None, files=None, json=None):
+def do_post(url, username=None, password=None, headers=None, data=None, files=None, json=None):
     response = None
+    basicAuth = None
+    if username != None and password != None:
+        basicAuth = HTTPBasicAuth(username, password)
     try:
-        response = requests.post(url, headers=headers, data=data, files=files, json=json)
+        if basicAuth != None:
+            response = requests.post(url, auth=basicAuth, headers=headers, data=data, files=files, json=json)
+        else:
+            response = requests.post(url, headers=headers, data=data, files=files, json=json)
         response.raise_for_status()
         return response
         # Additional code will only run if the request is successful
