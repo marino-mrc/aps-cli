@@ -37,6 +37,11 @@ def port_number_validation_callback(value: int):
         raise typer.BadParameter("Only values between 0 and 15 are allowed")
     return value
 
+def mandatory_port_validation_callback(value: int):
+    if (value > 15 or value < 0):
+        raise typer.BadParameter("Only values between 0 and 15 are allowed")
+    return value    
+
 @app.command(name="port-set")
 def set_port(ctx: typer.Context, port_number: Annotated[int, typer.Argument(callback=port_number_validation_callback)], 
         port_status: Annotated[str, typer.Argument(callback=port_status_validation_callback)]):
@@ -68,10 +73,32 @@ def port_status(ctx: typer.Context, port_number: Annotated[int, typer.Argument(c
         utils.print_msg(f'Retrieving Port {port_number} info', True, ctx.obj.debug)
         res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['port-status']['url']), 
             username=ctx.obj.username, password=ctx.obj.password, params={'port': port_number})
-    table = Table("Port", "Status")
     response = res.json()
+    #print("response = {}".format(response))
     if response['status'] == "OK":
         ports = response['ports']
+        table = Table("Port", "Status")
+        for r in ports:
+            table.add_row(r, ports[r])
+        g_vars.console.print(table)
+    else:
+        message = typer.style("Error: {}".format(response['error']), fg=typer.colors.WHITE, bg=typer.colors.RED)
+        utils.print_msg(message, False, ctx.obj.debug)
+
+
+@app.command(name="port-show")
+def port_status(ctx: typer.Context, port_number: Annotated[int, typer.Argument(callback=mandatory_port_validation_callback)]):
+    """
+    Show details for a single port (power consumption)
+    """
+    utils.print_msg(f'Login with the user \'{ctx.obj.username}\' to url {ctx.obj.url}', True, ctx.obj.debug)
+    utils.print_msg(f'Retrieving Port {port_number} details', True, ctx.obj.debug)
+    res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['port-show']['url']), 
+        username=ctx.obj.username, password=ctx.obj.password, params={'port': port_number})
+    response = res.json()
+    if response['status'] == "OK":
+        ports = response['details']
+        table = Table("Param", "Value")
         for r in ports:
             table.add_row(r, ports[r])
         g_vars.console.print(table)

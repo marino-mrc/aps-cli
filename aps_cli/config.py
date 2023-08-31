@@ -6,15 +6,16 @@ app = typer.Typer()
 from rich.table import Table
 
 def ip_validation_callback(value: str):
-    try:
-        ipaddress.IPv4Address(value)
-    except (ValueError, TypeError) as e:
-        msg = '%s. Please enter an acceptable IP Address.' % str(e)
-        raise typer.BadParameter(msg)
+    if value is not None:
+        try:
+            ipaddress.IPv4Address(value)
+        except (ValueError, TypeError) as e:
+            msg = '%s. Please enter an acceptable IP Address.' % str(e)
+            raise typer.BadParameter(msg)
     return value
 
 def dns_validation_callback(value: str):
-    if value != "":
+    if value != None:
         try:
             ipaddress.IPv4Address(value)
         except (ValueError, TypeError) as e:
@@ -23,23 +24,24 @@ def dns_validation_callback(value: str):
     return value
 
 def ip_mask_validation_callback(value: str):
-    try:
-        if "/" not in value:
-            raise typer.BadParameter("Please use the following format a.b.c.d/yy")
-        ip_str = value.split("/")[0]
-        mask = value.split("/")[1]
-        ip = ipaddress.ip_address(ip_str)
-            # Append to self.hostiplist.
-        
-        if int(mask) < 0 or int(mask) > 32:
-            raise typer.BadParameter("Please use a valid mask!")
-    except (ValueError, TypeError) as e:
-        msg = '%s. Please enter an acceptable IP Address.' % str(e)
-        raise typer.BadParameter(msg)
+    if value is not None:
+        try:
+            if "/" not in value:
+                raise typer.BadParameter("Please use the following format a.b.c.d/yy")
+            ip_str = value.split("/")[0]
+            mask = value.split("/")[1]
+            ip = ipaddress.ip_address(ip_str)
+                # Append to self.hostiplist.
+            
+            if int(mask) < 0 or int(mask) > 32:
+                raise typer.BadParameter("Please use a valid mask!")
+        except (ValueError, TypeError) as e:
+            msg = '%s. Please enter an acceptable IP Address.' % str(e)
+            raise typer.BadParameter(msg)
     return value
 
 def hostname_validation_callback(value: str):
-    if len(value) > 16:
+    if value != None and len(value) > 16:
         raise typer.BadParameter("Maximum allowed len is 16 characters")
     return value
 
@@ -53,7 +55,6 @@ def net_print(ctx: typer.Context):
     res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['net-show']['url']), username=ctx.obj.username, password=ctx.obj.password)
     table = Table("Param", "Value")
     response = res.json()
-    print(response)
     if response['status'] == "OK":
         for r in response:
             if r not in ['status', 'error']:
@@ -64,20 +65,42 @@ def net_print(ctx: typer.Context):
 
 @app.command(name="net-change")
 def net_change(ctx: typer.Context,
-                ip: Annotated[str, typer.Option(callback=ip_mask_validation_callback, help='New IP format a.b.c.d/yy')],
-                gw: Annotated[str, typer.Option(callback=ip_validation_callback, help='New Gateway')],
-                dns1: Annotated[str, typer.Option(callback=dns_validation_callback, help='New Primary DNS')] = "",
-                dns2: Annotated[str, typer.Option(callback=dns_validation_callback, help='New Secondary DNS')] = "",
-                hostname: Annotated[str, typer.Option(callback=hostname_validation_callback, help='New Hostname')] = "",
+                ip: Annotated[str, typer.Option(callback=ip_mask_validation_callback, help='New IP format a.b.c.d/yy')] = None,
+                gw: Annotated[str, typer.Option(callback=ip_validation_callback, help='New Gateway')] = None,
+                dns1: Annotated[str, typer.Option(callback=dns_validation_callback, help='New Primary DNS')] = None,
+                dns2: Annotated[str, typer.Option(callback=dns_validation_callback, help='New Secondary DNS')] = None,
+                hostname: Annotated[str, typer.Option(callback=hostname_validation_callback, help='New Hostname')] = None,
                 dhcp: Annotated[bool, typer.Option(help='DHCP enabled')] = False):
     """
     Change the current network configuration
     """
     utils.print_msg(f'Login with the user \'{ctx.obj.username}\' to url {ctx.obj.url}', True, ctx.obj.debug)
     utils.print_msg(f'Changing network configuration', True, ctx.obj.debug)
-    ip_obj = ipaddress.IPv4Interface(ip)
-    d = {'ip': str(ip_obj.ip), 'sub': str(ip_obj.netmask), 'gw': gw, 'dns1': dns1, 'dns2': dns2, 'host': hostname, 'dhcp': ('1' if dhcp else '0')}
-    #print("Passing d = {}".format(d))
+        
+    d = {}
+    if dhcp is not None:
+        d['dhcp'] = ('1' if dhcp else '0')
+    
+    if ip is not None:
+        ip_obj = ipaddress.IPv4Interface(ip)
+        d['ip'] = str(ip_obj.ip)
+        d['sub'] = str(ip_obj.netmask)
+        # Passing ip/mask means passing the dhcp as well
+        d['dhcp'] = '0'
+
+    if gw is not None:
+        d['gw'] = gw
+
+    if dns1 is not None:
+        d['dns1'] = dns1
+
+    if dns2 is not None:
+        d['dns2'] = dns2
+
+    if hostname is not None:
+        d['host'] = hostname
+
+    print("Passing d = {}".format(d))
     res = utils.do_post("{}/{}".format(ctx.obj.url, g_vars.API_DICT['net-change']['url']), username=ctx.obj.username, password=ctx.obj.password, data=d)
     print(res.json())
 
