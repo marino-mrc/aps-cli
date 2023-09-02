@@ -90,7 +90,7 @@ $ aps config net-show
 #### The Switch Board
 ![switch_board_c](https://github.com/marino-mrc/aps-cli/assets/1167190/76bfedb5-3608-44c8-93e6-4933f23b1406)
 
-#### A cluster of ARM64 boards built with my APS
+#### A cluster of ARM64 boards built with an old version of my APS
 ![cluster_aps_old_c](https://github.com/marino-mrc/aps-cli/assets/1167190/2bcf0493-5d98-402b-a8d6-2193d4d6e372)
 
 ## How to contribute?
