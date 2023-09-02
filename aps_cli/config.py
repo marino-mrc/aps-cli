@@ -53,15 +53,21 @@ def net_print(ctx: typer.Context):
     utils.print_msg(f'Login with the user \'{ctx.obj.username}\' to url {ctx.obj.url}', True, ctx.obj.debug)
     utils.print_msg(f'Retrieving Info from all ports', True, ctx.obj.debug)
     res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['net-show']['url']), username=ctx.obj.username, password=ctx.obj.password)
-    table = Table("Param", "Value")
-    response = res.json()
-    if response['status'] == "OK":
-        for r in response:
-            if r not in ['status', 'error']:
-                table.add_row(r, response[r])
-        g_vars.console.print(table)
-    else:
-        print(response)
+    try:
+        response = res.json()
+        utils.print_msg("response = {}".format(response), True, ctx.obj.debug)
+        table = Table("Param", "Value")
+        if response['status'] == "OK":
+            for r in response:
+                if r not in ['status', 'error']:
+                    table.add_row(r, response[r])
+            g_vars.console.print(table)
+        else:
+            message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
+            utils.print_msg(message, False, ctx.obj.debug)
+    except Exception as e:
+        message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
+        utils.print_msg(message)
 
 @app.command(name="net-change")
 def net_change(ctx: typer.Context,
@@ -85,7 +91,7 @@ def net_change(ctx: typer.Context,
         ip_obj = ipaddress.IPv4Interface(ip)
         d['ip'] = str(ip_obj.ip)
         d['sub'] = str(ip_obj.netmask)
-        # Passing ip/mask means passing the dhcp as well
+        # Passing ip/mask means disabling the dhcp
         d['dhcp'] = '0'
 
     if gw is not None:
@@ -106,8 +112,24 @@ def net_change(ctx: typer.Context,
 
 @app.command(name="pw-change")
 def pw_change(ctx: typer.Context,
-                user: Annotated[str, typer.Option(help='Username')]):
+            user: Annotated[str, typer.Option(help='Username')],
+            password: Annotated[str, typer.Option(prompt=True, confirmation_prompt=True, hide_input=True)]):
     """
     Change the password for a user
     """
-    print(f"Changing the password")
+    if user is None:
+        user = ctx.obj.username
+    utils.print_msg(f'Login with the user \'{ctx.obj.username}\' to url {ctx.obj.url}', True, ctx.obj.debug)
+    utils.print_msg(f'Changing the password for the user \'{user}\'', True, ctx.obj.debug)
+    res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['pw-change']['url']), username=ctx.obj.username, password=ctx.obj.password, params={'user': user, 'pw': password})
+    try:
+        response = res.json()
+        utils.print_msg("response = {}".format(response), True, ctx.obj.debug)
+        if response['status'] == "OK":
+            message = typer.style("Status: OK", fg=typer.colors.GREEN, bold=True)
+        else:
+            message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
+        utils.print_msg(message, False, ctx.obj.debug)
+    except Exception as e:
+        message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
+        utils.print_msg(message)

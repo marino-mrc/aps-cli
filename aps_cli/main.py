@@ -51,14 +51,17 @@ def set_port(ctx: typer.Context, port_number: Annotated[int, typer.Argument(call
     utils.print_msg("Setting port {} to {}".format(port_number, port_status), True, ctx.obj.debug)
     res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['port-set']['url']),
         username=ctx.obj.username, password=ctx.obj.password, params={'port': port_number, 'status': port_status})
-    #print(res.json())
-    response = res.json()
-    if response['status'] == "OK":
-        message = typer.style("Status: {}".format(port_status), fg=typer.colors.GREEN, bold=True)
-    else:
-        message = typer.style("Error: {}".format(response['error']), fg=typer.colors.WHITE, bg=typer.colors.RED)
-    utils.print_msg(message, False, ctx.obj.debug)
-
+    try:
+        response = res.json()
+        utils.print_msg("response = {}".format(response), True, ctx.obj.debug)
+        if response['status'] == "OK":
+            message = typer.style("Status: {}".format(port_status), fg=typer.colors.GREEN, bold=True)
+        else:
+            message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
+        utils.print_msg(message, False, ctx.obj.debug)
+    except Exception as e:
+        message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
+        utils.print_msg(message)
 
 @app.command(name="port-status")
 def port_status(ctx: typer.Context, port_number: Annotated[int, typer.Argument(callback=port_number_validation_callback)] = None):
@@ -73,17 +76,21 @@ def port_status(ctx: typer.Context, port_number: Annotated[int, typer.Argument(c
         utils.print_msg(f'Retrieving Port {port_number} info', True, ctx.obj.debug)
         res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['port-status']['url']), 
             username=ctx.obj.username, password=ctx.obj.password, params={'port': port_number})
-    response = res.json()
-    #print("response = {}".format(response))
-    if response['status'] == "OK":
-        ports = response['ports']
-        table = Table("Port", "Status")
-        for r in ports:
-            table.add_row(r, ports[r])
-        g_vars.console.print(table)
-    else:
-        message = typer.style("Error: {}".format(response['error']), fg=typer.colors.WHITE, bg=typer.colors.RED)
-        utils.print_msg(message, False, ctx.obj.debug)
+    try:
+        response = res.json()
+        utils.print_msg("response = {}".format(response), True, ctx.obj.debug)
+        if response['status'] == "OK":
+            ports = response['ports']
+            table = Table("Port", "Status")
+            for r in ports:
+                table.add_row(r, ports[r])
+            g_vars.console.print(table)
+        else:
+            message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
+            utils.print_msg(message, False, ctx.obj.debug)
+    except Exception as e:
+        message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
+        utils.print_msg(message)
 
 
 @app.command(name="port-show")
@@ -95,13 +102,18 @@ def port_status(ctx: typer.Context, port_number: Annotated[int, typer.Argument(c
     utils.print_msg(f'Retrieving Port {port_number} details', True, ctx.obj.debug)
     res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['port-show']['url']), 
         username=ctx.obj.username, password=ctx.obj.password, params={'port': port_number})
-    response = res.json()
-    if response['status'] == "OK":
-        ports = response['details']
-        table = Table("Param", "Value")
-        for r in ports:
-            table.add_row(r, ports[r])
-        g_vars.console.print(table)
-    else:
-        message = typer.style("Error: {}".format(response['error']), fg=typer.colors.WHITE, bg=typer.colors.RED)
-        utils.print_msg(message, False, ctx.obj.debug)
+    try:
+        response = res.json()
+        utils.print_msg("response = {}".format(response), True, ctx.obj.debug)
+        if response['status'] == "OK":
+            ports = response['details']
+            table = Table("Param", "Value")
+            for r in ports:
+                table.add_row(r, ports[r])
+            g_vars.console.print(table)
+        else:
+            message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
+            utils.print_msg(message, False, ctx.obj.debug)
+    except Exception as e:
+        message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
+        utils.print_msg(message)

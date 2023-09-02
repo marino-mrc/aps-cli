@@ -23,26 +23,20 @@ def do_get(url, username=None, password=None, headers=None, params=None):
         response.raise_for_status()
         return response
     except requests.exceptions.HTTPError as error:
-        print("HttpError: ",error)
-        if response is not None:
-            print("Response: ", response.content)
-        raise typer.Exit(1)
-        # This code will run if there is a 404 error
+        message = typer.style("HttpError: {}".format(error), fg=typer.colors.RED)
     except requests.exceptions.TooManyRedirects as error:
-        print("TooManyRedirectsError: ", error)
-        if response is not None:
-            print("Response: ", response.content)
-        raise typer.Exit(1)
+        message = typer.style("TooManyRedirectsError: {}".format(error), fg=typer.colors.RED)
     except requests.Timeout as error:
-        print("TimeoutError: ", error)
-        if response is not None:
-            print("Response: ", response.content)
-        raise typer.Exit(1)
+        message = typer.style("TimeoutError: {}".format(error), fg=typer.colors.RED)
     except requests.exceptions.RequestException as error:
-        print("ConnectionError: ", error)
-        if response is not None:
-            print("Response: ", response.content)
-        raise typer.Exit(1)
+        message = typer.style("ConnectionError: {}".format(error), fg=typer.colors.RED)
+    except Exception as error:
+        message = typer.style("GenericError: {}".format(error), fg=typer.colors.RED)
+
+    #if response is not None:
+        #print("Response: ", response.content)
+    print_msg(message)
+    raise typer.Exit(1)
 
 def do_post(url, username=None, password=None, headers=None, data=None, files=None, json=None):
     response = None
@@ -58,26 +52,20 @@ def do_post(url, username=None, password=None, headers=None, data=None, files=No
         return response
         # Additional code will only run if the request is successful
     except requests.exceptions.HTTPError as error:
-        print("HttpError: ",error)
-        if response is not None:
-            print("Response: ", response.content)
-        raise typer.Exit(1)
-        # This code will run if there is a 404 error
+        message = typer.style("HttpError: {}".format(error), fg=typer.colors.RED)
     except requests.exceptions.TooManyRedirects as error:
-        print("TooManyRedirectsError: ", error)
-        if response is not None:
-            print("Response: ", response.content)
-        raise typer.Exit(1)
+        message = typer.style("TooManyRedirectsError: {}".format(error), fg=typer.colors.RED)
     except requests.Timeout as error:
-        print("TimeoutError: ", error)
-        if response is not None:
-            print("Response: ", response.content)
-        raise typer.Exit(1)
+        message = typer.style("TimeoutError: {}".format(error), fg=typer.colors.RED)
     except requests.exceptions.RequestException as error:
-        print("ConnectionError: ", error)
-        if response is not None:
-            print("Response: ", response.content)
-        raise typer.Exit(1)
+        message = typer.style("ConnectionError: {}".format(error), fg=typer.colors.RED)
+    except Exception as error:
+        message = typer.style("GenericError: {}".format(error), fg=typer.colors.RED)
+        
+    #if response is not None:
+        #print("Response: ", response.content)
+    print_msg(message)
+    raise typer.Exit(1)
 
 
 def do_delete(url, headers=None, params=None):
@@ -88,23 +76,17 @@ def do_delete(url, headers=None, params=None):
         return response
         # Additional code will only run if the request is successful
     except requests.exceptions.HTTPError as error:
-        print("HttpError: ",error)
-        if response is not None:
-            print("Response: ", response.content)
-        raise typer.Exit(1)
-        # This code will run if there is a 404 error
+        message = typer.style("HttpError: {}".format(error), fg=typer.colors.RED)
     except requests.exceptions.TooManyRedirects as error:
-        print("TooManyRedirectsError: ", error)
-        if response is not None:
-            print("Response: ", response.content)
-        raise typer.Exit(1)
+        message = typer.style("TooManyRedirectsError: {}".format(error), fg=typer.colors.RED)
     except requests.Timeout as error:
-        print("TimeoutError: ", error)
-        if response is not None:
-            print("Response: ", response.content)
-        raise typer.Exit(1)
+        message = typer.style("TimeoutError: {}".format(error), fg=typer.colors.RED)
     except requests.exceptions.RequestException as error:
-        print("ConnectionError: ", error)
-        if response is not None:
-            print("Response: ", response.content)
-        raise typer.Exit(1)
+        message = typer.style("ConnectionError: {}".format(error), fg=typer.colors.RED)
+    except Exception as error:
+        message = typer.style("GenericError: {}".format(error), fg=typer.colors.RED)
+        
+    #if response is not None:
+        #print("Response: ", response.content)
+    print_msg(message)
+    raise typer.Exit(1)
