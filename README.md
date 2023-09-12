@@ -1,6 +1,7 @@
 # Advanced Power Supply (APS) CLI
 ## What's the Advanced Power Supply?
 The Advanced Power Supply is a modular electronic board I built from scratch based on a PIC32MZ microcontroller for powering clusters of single-board computers or Mini PCs.
+It represents the ideal solution in low-power clusters (up to 2/3 KW) and edge computing solutions.
 
 Some interesting features:
 * Supports up to 16 devices (Mini PCs or SBCs)
