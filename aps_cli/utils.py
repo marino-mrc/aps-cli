@@ -10,83 +10,85 @@ def print_msg(msg, debug_msg=False, debug_status=False):
     elif debug_status == True:
         typer.echo(msg)
 
-def do_get(url, username=None, password=None, headers=None, params=None):
+# Returns 2 values:
+# 1. error state = {True, False}
+# 2. A message containing the response from the server or the exception message in case of errors
+def do_get(url, username=None, password=None, headers=None, params=None, debug=False, verify=False):
     response = None
     basicAuth = None
     if username != None and password != None:
         basicAuth = HTTPBasicAuth(username, password)
     try:
+        if debug == True:
+            print_msg("GET Request --> {} - Authentication = {}".format(url, basicAuth))
         if basicAuth != None:
-            response = requests.get(url, auth=basicAuth, params=params, headers=headers)
+            response = requests.get(url, auth=basicAuth, params=params, headers=headers, timeout=15, verify=verify)
         else:
-            response = requests.get(url, params=params, headers=headers)
+            response = requests.get(url, params=params, headers=headers, timeout=15, verify=verify)
         response.raise_for_status()
-        return response
+        if debug == True and response is not None:
+            print_msg("GET Response <-- {}".format(response.content))
+        return False, response
     except requests.exceptions.HTTPError as error:
-        message = typer.style("HttpError: {}".format(error), fg=typer.colors.RED)
+        error_message = "HttpError: {}".format(error)
     except requests.exceptions.TooManyRedirects as error:
-        message = typer.style("TooManyRedirectsError: {}".format(error), fg=typer.colors.RED)
+        error_message = "TooManyRedirectsError: {}".format(error)
     except requests.Timeout as error:
-        message = typer.style("TimeoutError: {}".format(error), fg=typer.colors.RED)
+        error_message = "TimeoutError: {}".format(error)
     except requests.exceptions.RequestException as error:
-        message = typer.style("ConnectionError: {}".format(error), fg=typer.colors.RED)
+        error_message = "ConnectionError: {}".format(error)
     except Exception as error:
-        message = typer.style("GenericError: {}".format(error), fg=typer.colors.RED)
+        error_message = "GenericError: {}".format(error)
+    return True, error_message
 
-    #if response is not None:
-        #print("Response: ", response.content)
-    print_msg(message)
-    raise typer.Exit(1)
-
-def do_post(url, username=None, password=None, headers=None, data=None, files=None, json=None):
+# Returns 2 values:
+# 1. error state = {True, False}
+# 2. A message containing the response from the server or the exception message in case of errors
+def do_post(url, username=None, password=None, headers=None, data=None, files=None, json=None, debug=False, verify=False):
     response = None
     basicAuth = None
     if username != None and password != None:
         basicAuth = HTTPBasicAuth(username, password)
     try:
+        if debug == True:
+            print_msg("POST Request --> {} - Authentication = {}".format(url, basicAuth))
         if basicAuth != None:
-            response = requests.post(url, auth=basicAuth, headers=headers, data=data, files=files, json=json)
+            response = requests.post(url, auth=basicAuth, headers=headers, data=data, files=files, json=json, timeout=15, verify=verify)
         else:
-            response = requests.post(url, headers=headers, data=data, files=files, json=json)
-        response.raise_for_status()
-        return response
-        # Additional code will only run if the request is successful
-    except requests.exceptions.HTTPError as error:
-        message = typer.style("HttpError: {}".format(error), fg=typer.colors.RED)
-    except requests.exceptions.TooManyRedirects as error:
-        message = typer.style("TooManyRedirectsError: {}".format(error), fg=typer.colors.RED)
-    except requests.Timeout as error:
-        message = typer.style("TimeoutError: {}".format(error), fg=typer.colors.RED)
-    except requests.exceptions.RequestException as error:
-        message = typer.style("ConnectionError: {}".format(error), fg=typer.colors.RED)
-    except Exception as error:
-        message = typer.style("GenericError: {}".format(error), fg=typer.colors.RED)
+            response = requests.post(url, headers=headers, data=data, files=files, json=json, timeout=15, verify=verify)
         
-    #if response is not None:
-        #print("Response: ", response.content)
-    print_msg(message)
-    raise typer.Exit(1)
+        response.raise_for_status()
+        if debug == True and response is not None:
+            print_msg("POST Response <-- {}".format(response.content))
+        return False, response
+    # Additional code will only run if the request is successful
+    except requests.exceptions.HTTPError as error:
+        error_message = "HttpError: {}".format(error)
+    except requests.exceptions.TooManyRedirects as error:
+        error_message = "TooManyRedirectsError: {}".format(error)
+    except requests.Timeout as error:
+        error_message = "TimeoutError: {}".format(error)
+    except requests.exceptions.RequestException as error:
+        error_message = "ConnectionError: {}".format(error)
+    except Exception as error:
+        error_message = "GenericError: {}".format(error)
+    return True, error_message
 
-
-def do_delete(url, headers=None, params=None):
+def do_delete(url, headers=None, params=None, verify=True):
     response = None
     try:
-        response = requests.delete(url, headers=headers, params=params)
+        response = requests.delete(url, headers=headers, params=params, timeout=15, verify=verify)
         response.raise_for_status()
-        return response
+        return False, response
         # Additional code will only run if the request is successful
     except requests.exceptions.HTTPError as error:
-        message = typer.style("HttpError: {}".format(error), fg=typer.colors.RED)
+        message = "HttpError: {}".format(error)
     except requests.exceptions.TooManyRedirects as error:
-        message = typer.style("TooManyRedirectsError: {}".format(error), fg=typer.colors.RED)
+        message = "TooManyRedirectsError: {}".format(error)
     except requests.Timeout as error:
-        message = typer.style("TimeoutError: {}".format(error), fg=typer.colors.RED)
+        message = "TimeoutError: {}".format(error)
     except requests.exceptions.RequestException as error:
-        message = typer.style("ConnectionError: {}".format(error), fg=typer.colors.RED)
+        message = "ConnectionError: {}".format(error)
     except Exception as error:
-        message = typer.style("GenericError: {}".format(error), fg=typer.colors.RED)
-        
-    #if response is not None:
-        #print("Response: ", response.content)
-    print_msg(message)
-    raise typer.Exit(1)
+        message = "GenericError: {}".format(error)
+    return True, error_message

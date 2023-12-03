@@ -49,24 +49,26 @@ def hostname_validation_callback(value: str):
 def net_print(ctx: typer.Context):
     """
     Print the current network configuration
-    """
-    utils.print_msg(f'Login with the user \'{ctx.obj.username}\' to url {ctx.obj.url}', True, ctx.obj.debug)
-    utils.print_msg(f'Retrieving Info from all ports', True, ctx.obj.debug)
-    res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['net-show']['url']), username=ctx.obj.username, password=ctx.obj.password)
-    try:
-        response = res.json()
-        utils.print_msg("response = {}".format(response), True, ctx.obj.debug)
-        table = Table("Param", "Value")
-        if response['status'] == "OK":
-            for r in response:
-                if r not in ['status', 'error']:
-                    table.add_row(r, response[r])
-            g_vars.console.print(table)
-        else:
-            message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
-            utils.print_msg(message, False, ctx.obj.debug)
-    except Exception as e:
-        message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
+    """    
+    error, res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['net-show']['url']),
+        username=ctx.obj.username, password=ctx.obj.password, debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
+    if not error:
+        try:
+            response = res.json()
+            table = Table("Param", "Value")
+            if response['status'] == "OK":
+                for r in response:
+                    if r not in ['status', 'error']:
+                        table.add_row(r, response[r])
+                g_vars.console.print(table)
+            else:
+                message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
+                utils.print_msg(message, False, ctx.obj.debug)
+        except Exception as e:
+            message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
+            utils.print_msg(message)
+    else:
+        message = typer.style(res, fg=typer.colors.RED)
         utils.print_msg(message)
 
 @app.command(name="net-change")
@@ -79,10 +81,7 @@ def net_change(ctx: typer.Context,
                 dhcp: Annotated[bool, typer.Option(help='DHCP enabled')] = False):
     """
     Change the current network configuration
-    """
-    utils.print_msg(f'Login with the user \'{ctx.obj.username}\' to url {ctx.obj.url}', True, ctx.obj.debug)
-    utils.print_msg(f'Changing network configuration', True, ctx.obj.debug)
-        
+    """    
     d = {}
     if dhcp is not None:
         d['dhcp'] = ('1' if dhcp else '0')
@@ -106,9 +105,12 @@ def net_change(ctx: typer.Context,
     if hostname is not None:
         d['host'] = hostname
 
-    print("Passing d = {}".format(d))
-    res = utils.do_post("{}/{}".format(ctx.obj.url, g_vars.API_DICT['net-change']['url']), username=ctx.obj.username, password=ctx.obj.password, data=d)
-    print(res.json())
+    error, res = utils.do_post("{}/{}".format(ctx.obj.url, g_vars.API_DICT['net-change']['url']), username=ctx.obj.username,
+        password=ctx.obj.password, data=d, debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
+    if not error:
+        print("Good: message = {}".format(res))
+    else:
+        print("Error! msg = {}".format(res))
 
 @app.command(name="pw-change")
 def pw_change(ctx: typer.Context,
@@ -119,17 +121,54 @@ def pw_change(ctx: typer.Context,
     """
     if user is None:
         user = ctx.obj.username
-    utils.print_msg(f'Login with the user \'{ctx.obj.username}\' to url {ctx.obj.url}', True, ctx.obj.debug)
-    utils.print_msg(f'Changing the password for the user \'{user}\'', True, ctx.obj.debug)
-    res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['pw-change']['url']), username=ctx.obj.username, password=ctx.obj.password, params={'user': user, 'pw': password})
-    try:
-        response = res.json()
-        utils.print_msg("response = {}".format(response), True, ctx.obj.debug)
-        if response['status'] == "OK":
-            message = typer.style("Status: OK", fg=typer.colors.GREEN, bold=True)
-        else:
-            message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
-        utils.print_msg(message, False, ctx.obj.debug)
-    except Exception as e:
-        message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
+    d = {}
+    d['user'] = user
+    d['pw'] = password
+    error, res = utils.do_post("{}/{}".format(ctx.obj.url, g_vars.API_DICT['pw-change']['url']), username=ctx.obj.username,
+        password=ctx.obj.password, data=d, debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
+    if not error:
+        try:
+            response = res.json()
+            if response['status'] == "OK":
+                message = typer.style("Status: OK", fg=typer.colors.GREEN, bold=True)
+            else:
+                message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
+            utils.print_msg(message, False, ctx.obj.debug)
+        except Exception as e:
+            message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
+            utils.print_msg(message)
+    else:
+        message = typer.style(res, fg=typer.colors.RED)
         utils.print_msg(message)
+
+@app.command(name="https-change")
+def pw_change(ctx: typer.Context,
+            enabled: Annotated[bool, typer.Option(help='HTTPS enabled')] = False):
+    """
+    Enable or disable HTTPS
+    """
+    d = {}
+    if enabled == True:
+        d['status'] = "true"
+    else:
+        print("setting FALSE")
+        d['status'] = "false"
+    error, res = utils.do_post("{}/{}".format(ctx.obj.url, g_vars.API_DICT['https-change']['url']), 
+        username=ctx.obj.username, password=ctx.obj.password, data=d, debug=ctx.obj.debug, 
+        verify=(not ctx.obj.insecure))
+    if not error:
+        try:
+            response = res.json()
+            if response['status'] == "OK":
+                message = typer.style("Status: OK", fg=typer.colors.GREEN, bold=True)
+            else:
+                message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
+            utils.print_msg(message, False, ctx.obj.debug)
+        except Exception as e:
+            message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
+            utils.print_msg(message)
+    else:
+        message = typer.style(res, fg=typer.colors.RED)
+        utils.print_msg(message)
+
+
