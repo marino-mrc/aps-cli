@@ -109,10 +109,19 @@ def port_status(ctx: typer.Context, port_number: Annotated[int, typer.Argument(c
         try:
             response = res.json()
             if response['status'] == "OK":
-                ports = response['details']
+                details = response['details']
                 table = Table("Param", "Value")
-                for r in ports:
-                    table.add_row(r, ports[r])
+                data = {}
+                data['port'] = port_number
+                data['enabled'] = utils.is_bit_set(int(details['info']), 0)
+                data['current'] = details["current"]
+                data['openCircuit'] = utils.is_bit_set(int(details['info']), 1)
+                data['shortCircuit'] = utils.is_bit_set(int(details['info']), 2)
+                data['sensorError'] = utils.is_bit_set(int(details['info']), 3)
+                data['adcError'] = utils.is_bit_set(int(details['info']), 4)
+                
+                for key in data:
+                    table.add_row(key, str(data[key]))
                 g_vars.console.print(table)
             else:
                 message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)

@@ -4,6 +4,12 @@ import typer
 import os
 from requests.auth import HTTPBasicAuth
 
+
+def is_bit_set(x, n):
+    #return x & 2 ** n != 0 
+    # a more bitwise- and performance-friendly version:
+    return x & 1 << n != 0
+
 def print_msg(msg, debug_msg=False, debug_status=False):
     if debug_msg == False:
         typer.echo(msg)
