@@ -71,6 +71,58 @@ def net_print(ctx: typer.Context):
         message = typer.style(res, fg=typer.colors.RED)
         utils.print_msg(message)
 
+@app.command(name="adc-show")
+def net_print(ctx: typer.Context):
+    """
+    Print the current network configuration
+    """    
+    error, res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['adc-show']['url']),
+        username=ctx.obj.username, password=ctx.obj.password, debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
+    if not error:
+        try:
+            response = res.json()
+            table = Table("Param", "Value")
+            if response['status'] == "OK":
+                for r in response:
+                    if r not in ['status', 'error']:
+                        table.add_row(r, response[r])
+                g_vars.console.print(table)
+            else:
+                message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
+                utils.print_msg(message, False, ctx.obj.debug)
+        except Exception as e:
+            message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
+            utils.print_msg(message)
+    else:
+        message = typer.style(res, fg=typer.colors.RED)
+        utils.print_msg(message)
+
+@app.command(name="power-show")
+def net_print(ctx: typer.Context):
+    """
+    Print the current network configuration
+    """    
+    error, res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['power-show']['url']),
+        username=ctx.obj.username, password=ctx.obj.password, debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
+    if not error:
+        try:
+            response = res.json()
+            table = Table("Param", "Value")
+            if response['status'] == "OK":
+                for r in response:
+                    if r not in ['status', 'error']:
+                        table.add_row(r, response[r])
+                g_vars.console.print(table)
+            else:
+                message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
+                utils.print_msg(message, False, ctx.obj.debug)
+        except Exception as e:
+            message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
+            utils.print_msg(message)
+    else:
+        message = typer.style(res, fg=typer.colors.RED)
+        utils.print_msg(message)
+
 @app.command(name="net-change")
 def net_change(ctx: typer.Context,
                 ip: Annotated[str, typer.Option(callback=ip_mask_validation_callback, help='New IP format a.b.c.d/yy')] = None,
