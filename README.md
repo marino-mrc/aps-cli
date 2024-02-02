@@ -85,14 +85,11 @@ $ aps config net-show
 ```
 ## Images of the APS board
 
-#### The control board
-![control_board_c](https://github.com/marino-mrc/aps-cli/assets/1167190/34f1e602-7b5f-4a2b-8981-a646a62db12f)
+#### The APS board (Control + Switch board)
+![aps_top_view_rotated](https://github.com/marino-mrc/aps-cli/assets/1167190/ae850f01-13ba-4b16-9aae-aee16bb57b51)
 
-#### The Switch Board
-![switch_board_c](https://github.com/marino-mrc/aps-cli/assets/1167190/76bfedb5-3608-44c8-93e6-4933f23b1406)
-
-#### A cluster of ARM64 boards built with an old version of my APS
-![cluster_aps_old_c](https://github.com/marino-mrc/aps-cli/assets/1167190/2bcf0493-5d98-402b-a8d6-2193d4d6e372)
+#### A cluster of x86_64 boards built with APS
+![mylab](https://github.com/marino-mrc/aps-cli/assets/1167190/03aba38a-a6f2-42a3-8399-7b51e35331c2)
 
 ## How to contribute?
 Please, ping me at marino dot mrc at gmail.com
