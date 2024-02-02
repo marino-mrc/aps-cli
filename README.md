@@ -5,14 +5,14 @@ It represents the ideal solution in low-power clusters (up to 2/3 KW) and edge c
 
 Some interesting features:
 * Supports up to 16 devices (Mini PCs or SBCs)
-* It can be used through the aps-cli or through an optional touchscreen display
+* It can be used through the aps-cli or an optional touchscreen display
 * Restful APIs for almost everything (per-port power consumption monitoring included)
 * It supports _virtually_ all SBCs and Mini PCs with an operating voltage between 5 and 24V. The output power depends on the power supply you use. I successfully tested it with a total power of ~1KW shared between 8 Mini PCs with 32GB of RAM and an 8-core CPU per node
-* It's fully compatible with [MaaS](https://maas.io/) and [Juju](https://juju.is/) by Canonical. This basically means you can provision clusters of Mini PCs in an efficient manner and deploy applications on them using MaaS and Juju. The power management is handled by MaaS and the APS is fully compatible with it. K3s, K8s, OpenStack, and many other things in your lab without the hassle of powering off and on your devices!
+* It's fully compatible with [MaaS](https://maas.io/) and [Juju](https://juju.is/) by Canonical. This means you can efficiently provision clusters of Mini PCs and deploy applications on them using MaaS and Juju. MaaS handles the power management and the APS is fully compatible with it. K3s, K8s, OpenStack, and many other things in your lab without the hassle of powering off and on your devices!
 * It's completely modular, hence the board can be easily customized based on your needs without buying a new PCB:
   * Removing the touchscreen is possible and this reduces the global cost of the board
   * Each "Switch Board" supports up to 8 devices (see the diagram below), but you can have 2 Switch Boards and the APS can manage up to 16 devices!
-  * Various output voltages are supported, no need to change the schematic
+  * Various output voltages are supported, there is no need to change the schematic
 
 ![APS diagram](https://github.com/marino-mrc/aps-cli/assets/1167190/093a1e4e-9cae-4159-977d-2213fc422c52)
 
@@ -83,6 +83,18 @@ $ aps config net-show
 │ hostname │ MCHPBOARD_E       │
 └──────────┴───────────────────┘
 ```
+## V2 is coming
+### What's new in V2?
+* Supports up to 64 ports. Each board has 8 ports, you can scale up to 8 boards using a hardware bus
+* The "control" board has been removed. You can use _any_ device with a serial port and one GPIO line (yes, Raspberry works)
+* Additional 5V and 12V unmonitored output lines (for powering on the control board without any external power supply)
+* Multiple power suppliers are supported _simultaneously_: it's possible to have 2 groups of 4 output ports and each group can have a different output voltage
+* Maximum input current: 80A
+* Maximum output current per line: 10A
+* Supports the MeanWell “Programmable Output Voltage” function. More info [here](https://www.meanwell-web.com/content/files/pdfs/productPdfs/MW/UHP-1500/UHP-1500-spec.pdf)
+* Agent on clients for advanced monitoring (TBD)
+* Grafana dashboards through SNMP
+
 ## Images of the APS board
 
 #### The APS board (Control + Switch board)
