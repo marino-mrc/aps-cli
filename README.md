@@ -14,7 +14,7 @@ Some interesting features:
   * Each "Switch Board" supports up to 8 devices (see the diagram below), but you can have 2 Switch Boards and the APS can manage up to 16 devices!
   * Various output voltages are supported, there is no need to change the schematic
 
-![APS diagram](https://github.com/marino-mrc/aps-cli/assets/1167190/093a1e4e-9cae-4159-977d-2213fc422c52)
+![aps-diagram-white](https://github.com/marino-mrc/aps-cli/assets/1167190/4dd858b4-6f68-49e4-ae34-53420ebbdac2)
 
 The firmware of the APS board can be freely downloaded from [here](https://github.com/marino-mrc/aps-firmware). The schematic will be available soon.
 
