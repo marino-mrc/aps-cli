@@ -26,9 +26,9 @@ def common(ctx: typer.Context,
     ctx.obj = Common(url, username, password, debug, insecure)
 
 def port_status_validation_callback(value: str):
-    value = value.upper()
-    if value != "ON" and value != "OFF":
-        raise typer.BadParameter("Only 'ON' or 'OFF' are allowed")
+    value = value.lower()
+    if value != "on" and value != "off":
+        raise typer.BadParameter("Only 'on' or 'off' are allowed")
     return value
 
 def port_number_validation_callback(value: int):
@@ -47,13 +47,13 @@ def set_port(ctx: typer.Context, port_number: Annotated[int, typer.Argument(call
     """
     Set the status of a given port to ON or OFF
     """
-    error, res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['port-set']['url']),
-        username=ctx.obj.username, password=ctx.obj.password, params={'port': port_number, 'status': port_status},
+    error, res = utils.do_post("{}/{}".format(ctx.obj.url, g_vars.API_DICT['port-set']['url']),
+        username=ctx.obj.username, password=ctx.obj.password, data={'port': port_number, 'state': port_status},
         debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
     if not error:
         try:
             response = res.json()
-            if response['status'] == "OK":
+            if response['status'] == port_status:
                 message = typer.style("Status: {}".format(port_status), fg=typer.colors.GREEN, bold=True)
             else:
                 message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)

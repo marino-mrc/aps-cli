@@ -26,7 +26,7 @@ def do_get(url, username=None, password=None, headers=None, params=None, debug=F
         basicAuth = HTTPBasicAuth(username, password)
     try:
         if debug == True:
-            print_msg("GET Request --> {} - Authentication = {}".format(url, basicAuth))
+            print_msg("GET Request --> {}\nParams = {}\nAuthentication = {}".format(url, params, basicAuth))
         if basicAuth != None:
             response = requests.get(url, auth=basicAuth, params=params, headers=headers, timeout=15, verify=verify)
         else:
