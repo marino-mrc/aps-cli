@@ -178,6 +178,44 @@ def net_change(ctx: typer.Context,
     else:
         print("Error! msg = {}".format(res))
 
+
+@app.command(name="input-set")
+def input_set(ctx: typer.Context,
+                module_id: Annotated[int, typer.Argument(min=1, help="Module ID")],
+                inputvoltage: Annotated[int, typer.Option(min=5,max=25, help='Input voltage for the connected power supply')],
+                vcr: Annotated[float, typer.Option(min=1.0,max=20.0, help='Voltage conversion ratio')],
+                tolerance: Annotated[float, typer.Option(min=1.0,max=20.0, help='Percentage value of the tolerance as an offset of the input voltage')]):
+    """
+    Change the configuration for a power supply
+    """
+    proceed = typer.confirm("Are you sure you want to proceed? Note that the APS board will be rebooted and all output ports will be powered off. At the end of the procedure, the output ports should have the same status they had before the reboot")
+    if not proceed:
+        raise typer.Abort()
+    
+    d = {}
+    d['mod'] = module_id - 1
+    d['iv'] = inputvoltage
+    d['vcr'] = vcr
+    d['tol'] = tolerance
+
+    error, res = utils.do_post("{}/{}".format(ctx.obj.url, g_vars.API_DICT['input-set']['url']), 
+        username=ctx.obj.username, password=ctx.obj.password, data=d, debug=ctx.obj.debug, 
+        verify=(not ctx.obj.insecure))
+    if not error:
+        try:
+            response = res.json()
+            if response['status'] == "OK":
+                message = typer.style("Status: OK", fg=typer.colors.GREEN, bold=True)
+            else:
+                message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
+            utils.print_msg(message, False, ctx.obj.debug)
+        except Exception as e:
+            message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
+            utils.print_msg(message)
+    else:
+        message = typer.style(res, fg=typer.colors.RED)
+        utils.print_msg(message)
+
 @app.command(name="pw-change")
 def pw_change(ctx: typer.Context,
             user: Annotated[str, typer.Option(help='Username')],
@@ -206,35 +244,3 @@ def pw_change(ctx: typer.Context,
     else:
         message = typer.style(res, fg=typer.colors.RED)
         utils.print_msg(message)
-
-@app.command(name="https-change")
-def pw_change(ctx: typer.Context,
-            enabled: Annotated[bool, typer.Option(help='HTTPS enabled')] = False):
-    """
-    Enable or disable HTTPS
-    """
-    d = {}
-    if enabled == True:
-        d['status'] = "true"
-    else:
-        print("setting FALSE")
-        d['status'] = "false"
-    error, res = utils.do_post("{}/{}".format(ctx.obj.url, g_vars.API_DICT['https-change']['url']), 
-        username=ctx.obj.username, password=ctx.obj.password, data=d, debug=ctx.obj.debug, 
-        verify=(not ctx.obj.insecure))
-    if not error:
-        try:
-            response = res.json()
-            if response['status'] == "OK":
-                message = typer.style("Status: OK", fg=typer.colors.GREEN, bold=True)
-            else:
-                message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
-            utils.print_msg(message, False, ctx.obj.debug)
-        except Exception as e:
-            message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
-            utils.print_msg(message)
-    else:
-        message = typer.style(res, fg=typer.colors.RED)
-        utils.print_msg(message)
-
-
