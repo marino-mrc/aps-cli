@@ -72,21 +72,28 @@ def net_print(ctx: typer.Context):
         utils.print_msg(message)
 
 @app.command(name="adc-show")
-def net_print(ctx: typer.Context):
+def adc_print(ctx: typer.Context,
+            module_id: Annotated[int, typer.Argument(min=1, help="Module ID")]):
+    """
+    Check the status of all ports or of a single port
+    """   
+    error, res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['adc-show']['url']), 
+        username=ctx.obj.username, password=ctx.obj.password, params={'module': module_id - 1},
+        debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
     """
     Print the current network configuration
     """    
-    error, res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['adc-show']['url']),
-        username=ctx.obj.username, password=ctx.obj.password, debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
     if not error:
         try:
             response = res.json()
-            table = Table("Param", "Value")
             if response['status'] == "OK":
-                for r in response:
-                    if r not in ['status', 'error']:
-                        table.add_row(r, response[r])
+                data = response['currentSensorParams']
+                table = Table("Param", "Value")
+                
+                for key in data:
+                    table.add_row(key, str(data[key]))
                 g_vars.console.print(table)
+
             else:
                 message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
                 utils.print_msg(message, False, ctx.obj.debug)
@@ -97,22 +104,29 @@ def net_print(ctx: typer.Context):
         message = typer.style(res, fg=typer.colors.RED)
         utils.print_msg(message)
 
-@app.command(name="power-show")
-def net_print(ctx: typer.Context):
+@app.command(name="input-show")
+def input_print(ctx: typer.Context,
+            module_id: Annotated[int, typer.Argument(min=1, help="Module ID")]):
+    """
+    Check the status of all ports or of a single port
+    """   
+    error, res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['input-show']['url']), 
+        username=ctx.obj.username, password=ctx.obj.password, params={'module': module_id - 1},
+        debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
     """
     Print the current network configuration
     """    
-    error, res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['power-show']['url']),
-        username=ctx.obj.username, password=ctx.obj.password, debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
     if not error:
         try:
             response = res.json()
-            table = Table("Param", "Value")
             if response['status'] == "OK":
-                for r in response:
-                    if r not in ['status', 'error']:
-                        table.add_row(r, response[r])
+                data = response['powerSupplySettings']
+                table = Table("Param", "Value")
+                
+                for key in data:
+                    table.add_row(key, str(data[key]))
                 g_vars.console.print(table)
+
             else:
                 message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
                 utils.print_msg(message, False, ctx.obj.debug)

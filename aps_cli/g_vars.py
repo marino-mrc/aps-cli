@@ -10,7 +10,7 @@ API_DICT = {
     'pw-change': {'url': 'config/pw_change.json', 'method': 'post'},
     'https-change': {'url': 'config/https_change.json', 'method': 'post'},
     'adc-show': {'url': 'config/adc_details.json', 'method': 'get'},
-    'power-show': {'url': 'config/power_details.json', 'method': 'get'}
+    'input-show': {'url': 'config/input_details.json', 'method': 'get'}
 }
 
 console = Console()

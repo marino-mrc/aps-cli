@@ -66,7 +66,8 @@ def set_port(ctx: typer.Context, port_number: Annotated[int, typer.Argument(call
         utils.print_msg(message)
 
 @app.command(name="port-status")
-def port_status(ctx: typer.Context, port_number: Annotated[int, typer.Argument(callback=port_number_validation_callback)] = None):
+def port_status(ctx: typer.Context, 
+    port_number: Annotated[int, typer.Argument(callback=port_number_validation_callback)] = None):
     """
     Check the status of all ports or of a single port
     """
