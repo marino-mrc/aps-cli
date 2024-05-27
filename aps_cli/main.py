@@ -32,13 +32,13 @@ def port_status_validation_callback(value: str):
     return value
 
 def port_number_validation_callback(value: int):
-    if value is not None and (value > 15 or value < 0):
-        raise typer.BadParameter("Only values between 0 and 15 are allowed")
+    if value is not None and (value > 16 or value < 1):
+        raise typer.BadParameter("Only values between 1 and 16 are allowed")
     return value
 
 def mandatory_port_validation_callback(value: int):
-    if (value > 15 or value < 0):
-        raise typer.BadParameter("Only values between 0 and 15 are allowed")
+    if (value > 16 or value < 1):
+        raise typer.BadParameter("Only values between 1 and 16 are allowed")
     return value    
 
 @app.command(name="port-set")
@@ -48,7 +48,7 @@ def set_port(ctx: typer.Context, port_number: Annotated[int, typer.Argument(call
     Set the status of a given port to ON or OFF
     """
     error, res = utils.do_post("{}/{}".format(ctx.obj.url, g_vars.API_DICT['port-set']['url']),
-        username=ctx.obj.username, password=ctx.obj.password, data={'port': port_number, 'state': port_status},
+        username=ctx.obj.username, password=ctx.obj.password, data={'port': port_number - 1, 'state': port_status},
         debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
     if not error:
         try:
@@ -76,7 +76,7 @@ def port_status(ctx: typer.Context,
             username=ctx.obj.username, password=ctx.obj.password, debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
     else:
         error, res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['port-status']['url']), 
-            username=ctx.obj.username, password=ctx.obj.password, params={'port': port_number},
+            username=ctx.obj.username, password=ctx.obj.password, params={'port': port_number - 1},
             debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
     if not error:
         try:
@@ -85,7 +85,7 @@ def port_status(ctx: typer.Context,
                 ports = response['ports']
                 table = Table("Port", "Status")
                 for r in ports:
-                    table.add_row(r, ports[r])
+                    table.add_row(str(int(r) + 1), ports[r])
                 g_vars.console.print(table)
             else:
                 message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
@@ -99,12 +99,14 @@ def port_status(ctx: typer.Context,
 
 
 @app.command(name="port-show")
-def port_status(ctx: typer.Context, port_number: Annotated[int, typer.Argument(callback=mandatory_port_validation_callback)]):
+def port_status(ctx: typer.Context, 
+    port_number: Annotated[int, typer.Argument(callback=mandatory_port_validation_callback)]):
     """
     Show details for a single port (power consumption)
     """
+    #port_number = port_number - 1
     error, res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['port-show']['url']), 
-        username=ctx.obj.username, password=ctx.obj.password, params={'port': port_number},
+        username=ctx.obj.username, password=ctx.obj.password, params={'port': port_number - 1},
         debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
     if not error:
         try:
@@ -115,6 +117,7 @@ def port_status(ctx: typer.Context, port_number: Annotated[int, typer.Argument(c
                 data = {}
                 data['port'] = port_number
                 data['enabled'] = utils.is_bit_set(int(details['info']), 0)
+                data['voltage'] = details['voltage']
                 data['current'] = details["current"]
                 data['openCircuit'] = utils.is_bit_set(int(details['info']), 1)
                 data['shortCircuit'] = utils.is_bit_set(int(details['info']), 2)
