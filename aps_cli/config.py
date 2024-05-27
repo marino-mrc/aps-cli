@@ -190,7 +190,9 @@ def input_set(ctx: typer.Context,
                 module_id: Annotated[int, typer.Argument(min=1, help="Module ID")],
                 inputvoltage: Annotated[int, typer.Option(min=5,max=25, help='Input voltage for the connected power supply')],
                 vcr: Annotated[float, typer.Option(min=1.0,max=20.0, help='Voltage conversion ratio')],
-                tolerance: Annotated[float, typer.Option(min=1.0,max=20.0, help='Percentage value of the tolerance as an offset of the input voltage')]):
+                tolerance: Annotated[float, typer.Option(min=1.0,max=20.0, help='Percentage value of the tolerance as an offset of the input voltage')],
+                vmin: Annotated[int, typer.Option(min=5,max=25, help='Minimum input voltage physically allowed for the module')],
+                vmax: Annotated[int, typer.Option(min=5,max=25, help='Maximum input voltage physically allowed for the module')]):
     """
     Change the configuration for a power supply
     """
@@ -203,6 +205,8 @@ def input_set(ctx: typer.Context,
     d['iv'] = inputvoltage
     d['vcr'] = vcr
     d['tol'] = tolerance
+    d['vmin'] = vmin
+    d['vmax'] = vmax
 
     error, res = utils.do_post("{}/{}".format(ctx.obj.url, g_vars.API_DICT['input-set']['url']), 
         username=ctx.obj.username, password=ctx.obj.password, data=d, debug=ctx.obj.debug, 
