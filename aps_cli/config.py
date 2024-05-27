@@ -122,7 +122,13 @@ def input_print(ctx: typer.Context,
             if response['status'] == "OK":
                 data = response['powerSupplySettings']
                 table = Table("Param", "Value")
-                
+                if data['moduleStatus'] == '0':
+                    data['moduleStatus'] = 'Disconnected'
+                elif data['moduleStatus'] == '1':
+                    data['moduleStatus'] = 'Connected'
+                else:
+                    data['moduleStatus'] = 'Undefined'
+
                 for key in data:
                     table.add_row(key, str(data[key]))
                 g_vars.console.print(table)
