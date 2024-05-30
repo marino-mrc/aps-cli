@@ -130,18 +130,22 @@ def input_print(ctx: typer.Context,
                     data['moduleStatus'] = 'Undefined'
 
                 if data["moduleType"] == "0": # single input module:
+                    data["moduleType"] = "Single Input"
                     for key in data:
                         if key == "inputVoltages":
                             table.add_row("InputVoltage0", str(data[key][0]))
                         else:
                             table.add_row(key, str(data[key]))
                 elif data["moduleType"] == "1":
+                    data["moduleType"] = "Double Input"
                     for key in data:
                         if key == "inputVoltages":
                             table.add_row("InputVoltage0", str(data[key][0]))
                             table.add_row("InputVoltage1", str(data[key][1]))
                         else:
                             table.add_row(key, str(data[key]))
+                else:
+                    data["moduleType"] = "Unsupported"
                 g_vars.console.print(table)
 
             else:
