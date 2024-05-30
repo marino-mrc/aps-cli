@@ -4,6 +4,11 @@ from typing_extensions import Annotated
 from aps_cli import utils, g_vars
 app = typer.Typer()
 from rich.table import Table
+from enum import Enum
+
+class ModuleType(str, Enum):
+    singleinput = "singleinput"
+    doubleinput = "dualinput"
 
 def ip_validation_callback(value: str):
     if value is not None:
@@ -99,6 +104,40 @@ def adc_print(ctx: typer.Context,
                 utils.print_msg(message, False, ctx.obj.debug)
         except Exception as e:
             message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
+            utils.print_msg(message)
+    else:
+        message = typer.style(res, fg=typer.colors.RED)
+        utils.print_msg(message)
+
+@app.command(name="module-show")
+def input_print(ctx: typer.Context,
+            module_id: Annotated[int, typer.Argument(min=1, max=2, help="Module ID")]):
+    """
+    Check the status of all ports or of a single port
+    """   
+    error, res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['module-show']['url']), 
+        username=ctx.obj.username, password=ctx.obj.password, params={'mod': module_id - 1},
+        debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
+    """
+    Print the current network configuration
+    """
+    if not error:
+        try:
+            response = res.json()
+            if response['status'] == "OK":
+                table = Table("Param", "Value")
+                data = response['details']
+                for key in data:
+                    if key in g_vars.MODULE_DICT:
+                        table.add_row(key, str(g_vars.MODULE_DICT[key][str(data[key])]))
+                    else:
+                        table.add_row(key, str(data[key]))
+                g_vars.console.print(table)
+            else:
+                message = typer.style("AError: {}".format(response['error']), fg=typer.colors.RED)
+                utils.print_msg(message, False, ctx.obj.debug)
+        except Exception as e:
+            message = typer.style("BError: {}".format(e), fg=typer.colors.RED)
             utils.print_msg(message)
     else:
         message = typer.style(res, fg=typer.colors.RED)
@@ -257,6 +296,43 @@ def pw_change(ctx: typer.Context,
     d['pw'] = password
     error, res = utils.do_post("{}/{}".format(ctx.obj.url, g_vars.API_DICT['pw-change']['url']), username=ctx.obj.username,
         password=ctx.obj.password, data=d, debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
+    if not error:
+        try:
+            response = res.json()
+            if response['status'] == "OK":
+                message = typer.style("Status: OK", fg=typer.colors.GREEN, bold=True)
+            else:
+                message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
+            utils.print_msg(message, False, ctx.obj.debug)
+        except Exception as e:
+            message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
+            utils.print_msg(message)
+    else:
+        message = typer.style(res, fg=typer.colors.RED)
+        utils.print_msg(message)
+
+
+@app.command(name="module-set")
+def module_set(ctx: typer.Context,
+                module_id: Annotated[int, typer.Argument(min=1, max=2, help="Module ID")],
+                module_type: Annotated[ModuleType, typer.Option(help='Type of the input module')]):
+    """
+    Change the configuration for a power supply
+    """
+    proceed = typer.confirm("Are you sure you want to proceed? Note that the APS board will be rebooted and all output ports will be powered off. At the end of the procedure, the output ports should have the same status they had before the reboot")
+    if not proceed:
+        raise typer.Abort()
+    
+    d = {}
+    d['mod'] = module_id - 1
+    if module_type == "singleinput":
+        d['type'] = 0
+    else:
+        d['type'] = 1
+
+    error, res = utils.do_post("{}/{}".format(ctx.obj.url, g_vars.API_DICT['module-set']['url']), 
+        username=ctx.obj.username, password=ctx.obj.password, data=d, debug=ctx.obj.debug, 
+        verify=(not ctx.obj.insecure))
     if not error:
         try:
             response = res.json()
