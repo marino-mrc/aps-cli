@@ -106,7 +106,7 @@ def adc_print(ctx: typer.Context,
 
 @app.command(name="input-show")
 def input_print(ctx: typer.Context,
-            module_id: Annotated[int, typer.Argument(min=1, help="Module ID")]):
+            module_id: Annotated[int, typer.Argument(min=1, max=2, help="Module ID")]):
     """
     Check the status of all ports or of a single port
     """   
@@ -133,15 +133,15 @@ def input_print(ctx: typer.Context,
                     data["moduleType"] = "Single Input"
                     for key in data:
                         if key == "inputVoltages":
-                            table.add_row("InputVoltage0", str(data[key][0]))
+                            table.add_row("InputVoltageConfig1", str(data[key][0]))
                         else:
                             table.add_row(key, str(data[key]))
                 elif data["moduleType"] == "1":
                     data["moduleType"] = "Double Input"
                     for key in data:
                         if key == "inputVoltages":
-                            table.add_row("InputVoltage0", str(data[key][0]))
-                            table.add_row("InputVoltage1", str(data[key][1]))
+                            table.add_row("InputVoltageConfig1", str(data[key][0]))
+                            table.add_row("InputVoltageConfig2", str(data[key][1]))
                         else:
                             table.add_row(key, str(data[key]))
                 else:
@@ -202,12 +202,13 @@ def net_change(ctx: typer.Context,
 
 @app.command(name="input-set")
 def input_set(ctx: typer.Context,
-                module_id: Annotated[int, typer.Argument(min=1, help="Module ID")],
-                inputvoltage: Annotated[int, typer.Option(min=5,max=25, help='Input voltage for the connected power supply')],
-                vcr: Annotated[float, typer.Option(min=1.0,max=20.0, help='Voltage conversion ratio')],
-                tolerance: Annotated[float, typer.Option(min=1.0,max=20.0, help='Percentage value of the tolerance as an offset of the input voltage')],
-                vmin: Annotated[int, typer.Option(min=5,max=25, help='Minimum input voltage physically allowed for the module')],
-                vmax: Annotated[int, typer.Option(min=5,max=25, help='Maximum input voltage physically allowed for the module')]):
+                module_id: Annotated[int, typer.Argument(min=1, max=2, help="Module ID")],
+                input_voltage_id: Annotated[int, typer.Argument(min=1, max=2, help="Input Voltage ID")],
+                inputvoltage: Annotated[int, typer.Option(min=5,max=25, help='Expected Input voltage for the connected power supply')] = 12,
+                vcr: Annotated[float, typer.Option(min=1.0,max=20.0, help='Voltage conversion ratio')] = 9.1,
+                tolerance: Annotated[float, typer.Option(min=1.0,max=20.0, help='Percentage value of the tolerance as an offset of the input voltage')] = 10.0,
+                vmin: Annotated[int, typer.Option(min=5,max=25, help='Minimum input voltage physically allowed for the module')] = 5,
+                vmax: Annotated[int, typer.Option(min=5,max=25, help='Maximum input voltage physically allowed for the module')] = 25):
     """
     Change the configuration for a power supply
     """
@@ -217,6 +218,7 @@ def input_set(ctx: typer.Context,
     
     d = {}
     d['mod'] = module_id - 1
+    d['ivn'] = input_voltage_id - 1
     d['iv'] = inputvoltage
     d['vcr'] = vcr
     d['tol'] = tolerance
