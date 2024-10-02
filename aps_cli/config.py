@@ -76,126 +76,7 @@ def net_print(ctx: typer.Context):
         message = typer.style(res, fg=typer.colors.RED)
         utils.print_msg(message)
 
-@app.command(name="adc-show")
-def adc_print(ctx: typer.Context,
-            module_id: Annotated[int, typer.Argument(min=1, help="Module ID")]):
-    """
-    Check the status of all ports or of a single port
-    """   
-    error, res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['adc-show']['url']), 
-        username=ctx.obj.username, password=ctx.obj.password, params={'module': module_id - 1},
-        debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
-    """
-    Print the current network configuration
-    """    
-    if not error:
-        try:
-            response = res.json()
-            if response['status'] == "OK":
-                data = response['currentSensorParams']
-                table = Table("Param", "Value")
-                
-                for key in data:
-                    table.add_row(key, str(data[key]))
-                g_vars.console.print(table)
 
-            else:
-                message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
-                utils.print_msg(message, False, ctx.obj.debug)
-        except Exception as e:
-            message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
-            utils.print_msg(message)
-    else:
-        message = typer.style(res, fg=typer.colors.RED)
-        utils.print_msg(message)
-
-@app.command(name="module-show")
-def input_print(ctx: typer.Context,
-            module_id: Annotated[int, typer.Argument(min=1, max=2, help="Module ID")]):
-    """
-    Check the status of all ports or of a single port
-    """   
-    error, res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['module-show']['url']), 
-        username=ctx.obj.username, password=ctx.obj.password, params={'mod': module_id - 1},
-        debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
-    """
-    Print the current network configuration
-    """
-    if not error:
-        try:
-            response = res.json()
-            if response['status'] == "OK":
-                table = Table("Param", "Value")
-                data = response['details']
-                for key in data:
-                    if key in g_vars.MODULE_DICT:
-                        table.add_row(key, str(g_vars.MODULE_DICT[key][str(data[key])]))
-                    else:
-                        table.add_row(key, str(data[key]))
-                g_vars.console.print(table)
-            else:
-                message = typer.style("AError: {}".format(response['error']), fg=typer.colors.RED)
-                utils.print_msg(message, False, ctx.obj.debug)
-        except Exception as e:
-            message = typer.style("BError: {}".format(e), fg=typer.colors.RED)
-            utils.print_msg(message)
-    else:
-        message = typer.style(res, fg=typer.colors.RED)
-        utils.print_msg(message)
-
-@app.command(name="input-show")
-def input_print(ctx: typer.Context,
-            module_id: Annotated[int, typer.Argument(min=1, max=2, help="Module ID")]):
-    """
-    Check the status of all ports or of a single port
-    """   
-    error, res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['input-show']['url']), 
-        username=ctx.obj.username, password=ctx.obj.password, params={'module': module_id - 1},
-        debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
-    """
-    Print the current network configuration
-    """    
-    if not error:
-        try:
-            response = res.json()
-            if response['status'] == "OK":
-                data = response['powerSupplySettings']
-                table = Table("Param", "Value")
-                if data['moduleStatus'] == '0':
-                    data['moduleStatus'] = 'Disconnected'
-                elif data['moduleStatus'] == '1':
-                    data['moduleStatus'] = 'Connected'
-                else:
-                    data['moduleStatus'] = 'Undefined'
-
-                if data["moduleType"] == "0": # single input module:
-                    data["moduleType"] = "Single Input"
-                    for key in data:
-                        if key == "inputVoltages":
-                            table.add_row("InputVoltageConfig1", str(data[key][0]))
-                        else:
-                            table.add_row(key, str(data[key]))
-                elif data["moduleType"] == "1":
-                    data["moduleType"] = "Double Input"
-                    for key in data:
-                        if key == "inputVoltages":
-                            table.add_row("InputVoltageConfig1", str(data[key][0]))
-                            table.add_row("InputVoltageConfig2", str(data[key][1]))
-                        else:
-                            table.add_row(key, str(data[key]))
-                else:
-                    data["moduleType"] = "Unsupported"
-                g_vars.console.print(table)
-
-            else:
-                message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
-                utils.print_msg(message, False, ctx.obj.debug)
-        except Exception as e:
-            message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
-            utils.print_msg(message)
-    else:
-        message = typer.style(res, fg=typer.colors.RED)
-        utils.print_msg(message)
 
 @app.command(name="net-change")
 def net_change(ctx: typer.Context,
@@ -239,48 +120,6 @@ def net_change(ctx: typer.Context,
         print("Error! msg = {}".format(res))
 
 
-@app.command(name="input-set")
-def input_set(ctx: typer.Context,
-                module_id: Annotated[int, typer.Argument(min=1, max=2, help="Module ID")],
-                input_voltage_id: Annotated[int, typer.Argument(min=1, max=2, help="Input Voltage ID")],
-                inputvoltage: Annotated[int, typer.Option(min=5,max=25, help='Expected Input voltage for the connected power supply')] = 12,
-                vcr: Annotated[float, typer.Option(min=1.0,max=20.0, help='Voltage conversion ratio')] = 9.1,
-                tolerance: Annotated[float, typer.Option(min=1.0,max=20.0, help='Percentage value of the tolerance as an offset of the input voltage')] = 10.0,
-                vmin: Annotated[int, typer.Option(min=5,max=25, help='Minimum input voltage physically allowed for the module')] = 5,
-                vmax: Annotated[int, typer.Option(min=5,max=25, help='Maximum input voltage physically allowed for the module')] = 25):
-    """
-    Change the configuration for a power supply
-    """
-    proceed = typer.confirm("Are you sure you want to proceed? Note that the APS board will be rebooted and all output ports will be powered off. At the end of the procedure, the output ports should have the same status they had before the reboot")
-    if not proceed:
-        raise typer.Abort()
-    
-    d = {}
-    d['mod'] = module_id - 1
-    d['ivn'] = input_voltage_id - 1
-    d['iv'] = inputvoltage
-    d['vcr'] = vcr
-    d['tol'] = tolerance
-    d['vmin'] = vmin
-    d['vmax'] = vmax
-
-    error, res = utils.do_post("{}/{}".format(ctx.obj.url, g_vars.API_DICT['input-set']['url']), 
-        username=ctx.obj.username, password=ctx.obj.password, data=d, debug=ctx.obj.debug, 
-        verify=(not ctx.obj.insecure))
-    if not error:
-        try:
-            response = res.json()
-            if response['status'] == "OK":
-                message = typer.style("Status: OK", fg=typer.colors.GREEN, bold=True)
-            else:
-                message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
-            utils.print_msg(message, False, ctx.obj.debug)
-        except Exception as e:
-            message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
-            utils.print_msg(message)
-    else:
-        message = typer.style(res, fg=typer.colors.RED)
-        utils.print_msg(message)
 
 @app.command(name="pw-change")
 def pw_change(ctx: typer.Context,
@@ -296,43 +135,6 @@ def pw_change(ctx: typer.Context,
     d['pw'] = password
     error, res = utils.do_post("{}/{}".format(ctx.obj.url, g_vars.API_DICT['pw-change']['url']), username=ctx.obj.username,
         password=ctx.obj.password, data=d, debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
-    if not error:
-        try:
-            response = res.json()
-            if response['status'] == "OK":
-                message = typer.style("Status: OK", fg=typer.colors.GREEN, bold=True)
-            else:
-                message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
-            utils.print_msg(message, False, ctx.obj.debug)
-        except Exception as e:
-            message = typer.style("Error: {}".format(e), fg=typer.colors.RED)
-            utils.print_msg(message)
-    else:
-        message = typer.style(res, fg=typer.colors.RED)
-        utils.print_msg(message)
-
-
-@app.command(name="module-set")
-def module_set(ctx: typer.Context,
-                module_id: Annotated[int, typer.Argument(min=1, max=2, help="Module ID")],
-                module_type: Annotated[ModuleType, typer.Option(help='Type of the input module')]):
-    """
-    Change the configuration for a power supply
-    """
-    proceed = typer.confirm("Are you sure you want to proceed? Note that the APS board will be rebooted and all output ports will be powered off. At the end of the procedure, the output ports should have the same status they had before the reboot")
-    if not proceed:
-        raise typer.Abort()
-    
-    d = {}
-    d['mod'] = module_id - 1
-    if module_type == "singleinput":
-        d['type'] = 0
-    else:
-        d['type'] = 1
-
-    error, res = utils.do_post("{}/{}".format(ctx.obj.url, g_vars.API_DICT['module-set']['url']), 
-        username=ctx.obj.username, password=ctx.obj.password, data=d, debug=ctx.obj.debug, 
-        verify=(not ctx.obj.insecure))
     if not error:
         try:
             response = res.json()

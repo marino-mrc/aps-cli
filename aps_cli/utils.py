@@ -65,7 +65,7 @@ def do_post(url, username=None, password=None, headers=None, data=None, files=No
         
         response.raise_for_status()
         if debug == True and response is not None:
-            print_msg("POST Response <-- {}".format(response.content))
+            print_msg("POST Response <-- {}".format(response.text))
         return False, response
     # Additional code will only run if the request is successful
     except requests.exceptions.HTTPError as error:
