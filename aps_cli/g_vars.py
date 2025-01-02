@@ -1,18 +1,26 @@
 # Global variables file
 from rich.console import Console
 
+MAX_INPUT_PORTS = 2
+MAX_OUTPUT_PORTS = 8
+MAX_MODULES = 2
+
 API_DICT = {
-    'port-set': {'url': 'port_set.json', 'method': 'post'},
-    'port-status': {'url': 'port_status.json', 'method': 'get'},
-    'port-show': {'url': 'port_details.json', 'method': 'get'},
-    'net-show': {'url': 'config/net_details.json', 'method': 'get'},
-    'net-change': {'url': 'config/net_change.json', 'method': 'post'},
-    'pw-change': {'url': 'config/pw_change.json', 'method': 'post'},
-    'adc-show': {'url': 'config/adc_details.json', 'method': 'get'},
-    'input-show': {'url': 'config/input_details.json', 'method': 'get'},
-    'input-set': {'url': 'config/input_set.json', 'method': 'post'},
-    'module-show': {'url': 'config/module_details.json', 'method': 'get'},
-    'module-set': {'url': 'config/module_set.json', 'method': 'post'}
+    # Aps
+    'status': {'url': 'status.json', 'method': 'get'},
+    # Ports
+    'port-set': {'url': 'ports/set.json', 'method': 'post'},
+    'port-status': {'url': 'ports/status.json', 'method': 'get'},
+    'port-show': {'url': 'ports/details.json', 'method': 'get'},
+
+    # Modules
+    'module-status': {'url': 'modules/status.json', 'method': 'get'},
+    'module-show': {'url': 'modules/details.json', 'method': 'get'},
+    'module-set': {'url': 'modules/set.json', 'method': 'post'}, #To enable or disable a module
+    'module-configure': {'url': 'modules/configure.json', 'method': 'post'}, #To configure a module
+
+    # Network
+    'net-show': {'url': 'config/net.json', 'method': 'get'}
 }
 
 

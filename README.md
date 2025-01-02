@@ -71,3 +71,13 @@ $ aps config net-show
 Please, ping me at marino dot mrc at gmail.com
 I'm open to any type of collaboration on this project!
 
+## Installing the required dependencis
+```bash
+git clone 
+cd aps-cli
+pip3 install poetry
+poetry install
+poetry shell
+```
+
+

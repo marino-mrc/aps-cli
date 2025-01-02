@@ -1,0 +1,10 @@
+{
+  "configuration": {
+    "InputVoltage0": 25.0,
+    "InputVoltage1": 25.0,
+    "VoltageConversionRatio0": 5.1,
+    "VoltageConversionRatio1": 5.1,
+    "InputTolerance0": 10.0,
+    "InputTolerance1": 10.0
+  }
+}
