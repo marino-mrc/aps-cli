@@ -6,6 +6,8 @@ MAX_OUTPUT_PORTS = 8
 MAX_MODULES = 2
 
 API_DICT = {
+    # Aps
+    'status': {'url': 'status.json', 'method': 'get'},
     # Ports
     'port-set': {'url': 'ports/set.json', 'method': 'post'},
     'port-status': {'url': 'ports/status.json', 'method': 'get'},
@@ -15,7 +17,10 @@ API_DICT = {
     'module-status': {'url': 'modules/status.json', 'method': 'get'},
     'module-show': {'url': 'modules/details.json', 'method': 'get'},
     'module-set': {'url': 'modules/set.json', 'method': 'post'}, #To enable or disable a module
-    'module-configure': {'url': 'modules/configure.json', 'method': 'post'} #To configure a module   
+    'module-configure': {'url': 'modules/configure.json', 'method': 'post'}, #To configure a module
+
+    # Network
+    'net-show': {'url': 'config/net.json', 'method': 'get'}
 }
 
 
