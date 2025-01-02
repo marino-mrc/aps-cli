@@ -26,3 +26,31 @@ def common(ctx: typer.Context,
         insecure: Annotated[bool, typer.Option(envvar='APS_INSECURE', help='Disable SSL certificates verification')] = False):
     """Common Entry Point"""
     ctx.obj = Common(url, username, password, debug, insecure)
+
+@app.command(name="status")
+def status(ctx: typer.Context):
+
+    error, res = utils.do_get("{}/{}".format(ctx.obj.url, g_vars.API_DICT['status']['url']), 
+        username=ctx.obj.username, password=ctx.obj.password, debug=ctx.obj.debug, verify=(not ctx.obj.insecure))
+    
+    if not error:
+        try:
+            response = res.json()
+            if response['status'] == "OK":
+                table = Table("Param", "Value")
+                data = response['details']
+                for key in data:
+                    if key in g_vars.MODULE_DICT:
+                        table.add_row(key, str(g_vars.MODULE_DICT[key][str(data[key])]))
+                    else:
+                        table.add_row(key, str(data[key]))
+                g_vars.console.print(table)
+            else:
+                message = typer.style("AError: {}".format(response['error']), fg=typer.colors.RED)
+                utils.print_msg(message, False, ctx.obj.debug)
+        except Exception as e:
+            message = typer.style("BError: {}".format(e), fg=typer.colors.RED)
+            utils.print_msg(message)
+    else:
+        message = typer.style(res, fg=typer.colors.RED)
+        utils.print_msg(message)
