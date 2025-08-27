@@ -4,7 +4,8 @@ from dataclasses import dataclass
 from aps_cli import utils, g_vars, config, aps_port, aps_module
 from rich.table import Table
 
-app = typer.Typer(rich_help_panel=False)
+#app = typer.Typer(rich_help_panel=False)
+app = typer.Typer(rich_help_panel=False, no_args_is_help=False)
 app.add_typer(aps_port.app, name="port")
 app.add_typer(aps_module.app, name="module")
 app.add_typer(config.app, name="config")
@@ -38,12 +39,10 @@ def status(ctx: typer.Context):
             response = res.json()
             if response['status'] == "OK":
                 table = Table("Param", "Value")
-                data = response['details']
+                data = response['details']                
                 for key in data:
-                    if key in g_vars.MODULE_DICT:
-                        table.add_row(key, str(g_vars.MODULE_DICT[key][str(data[key])]))
-                    else:
-                        table.add_row(key, str(data[key]))
+                    table.add_row(key, str(data[key]))
+
                 g_vars.console.print(table)
             else:
                 message = typer.style("AError: {}".format(response['error']), fg=typer.colors.RED)

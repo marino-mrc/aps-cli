@@ -21,10 +21,7 @@ def net_show(ctx: typer.Context):
                 table = Table("Param", "Value")
                 data = response['net_config']
                 for key in data:
-                    if key in g_vars.MODULE_DICT:
-                        table.add_row(key, str(g_vars.MODULE_DICT[key][str(data[key])]))
-                    else:
-                        table.add_row(key, str(data[key]))
+                    table.add_row(key, str(data[key]))
                 g_vars.console.print(table)
             else:
                 message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)

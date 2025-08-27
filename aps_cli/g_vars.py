@@ -12,6 +12,7 @@ API_DICT = {
     'status': {'url': 'status.json', 'method': 'get'},
     'spi-config': {'url': 'aps_config_spi.json', 'method': 'post'},
     'pw-change': {'url': 'aps_config_password.json', 'method': 'post'},
+    
     # Ports
     'port-set': {'url': 'ports/set.json', 'method': 'post'},
     'port-status': {'url': 'ports/status.json', 'method': 'get'},
@@ -27,9 +28,4 @@ API_DICT = {
     'net-show': {'url': 'config/net.json', 'method': 'get'}
 }
 
-
-MODULE_DICT = {
-    'moduleType': { '0': 'Single Input', '1': 'Double Input'},
-    'moduleStatus': { '0': 'Disconnected', '1': 'Connected' }
-}
 console = Console()
