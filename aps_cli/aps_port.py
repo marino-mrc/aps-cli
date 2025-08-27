@@ -32,7 +32,13 @@ def port_status(ctx: typer.Context,
                 ports = response[module_section]
                 table = Table("Module" + str(module_number) + " Ports", "Status")
                 for r in ports:
-                    table.add_row("Port" + str(int(r[-1]) + 1), ports[r])
+                    if int(ports[r]) % 2 == 0:
+                        s = "0 "
+                    else:
+                        s = "1 "
+                    if int(ports[r]) > 1:
+                        s+= "(!!)"
+                    table.add_row("Port" + str(int(r[-1]) + 1), s)
                 g_vars.console.print(table)
             else:
                 message = typer.style("Error: {}".format(response['error']), fg=typer.colors.RED)
@@ -70,7 +76,7 @@ def port_show(ctx: typer.Context,
                 data['openCircuit'] = utils.is_bit_set(int(details['status_bitmap']), 1)
                 data['shortCircuit'] = utils.is_bit_set(int(details['status_bitmap']), 2)
                 data['sensorError'] = utils.is_bit_set(int(details['status_bitmap']), 3)
-                data['adcError'] = utils.is_bit_set(int(details['status_bitmap']), 4)
+                data['overcurrent'] = utils.is_bit_set(int(details['status_bitmap']), 4)
                 
                 for key in data:
                     table.add_row(key, str(data[key]))
