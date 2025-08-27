@@ -58,6 +58,12 @@ def do_post(url, username=None, password=None, headers=None, data=None, files=No
     try:
         if debug == True:
             print_msg("POST Request --> {} - Authentication = {}".format(url, basicAuth))
+            if data:
+                print_msg("POST Request --> {}\nParams = {}\nAuthentication = {}".format(url, data, basicAuth))
+            elif json:
+                print_msg("POST Request --> {}\nParams = {}\nAuthentication = {}".format(url, json, basicAuth))
+            else:
+                print_msg("POST Request --> {}\nAuthentication = {}".format(url, basicAuth))
         if basicAuth != None:
             response = requests.post(url, auth=basicAuth, headers=headers, data=data, files=files, json=json, timeout=15, verify=verify)
         else:
