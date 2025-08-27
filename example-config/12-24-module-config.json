@@ -1,0 +1,13 @@
+{
+  "configuration": {
+    "InputVoltage0": 12.0,
+    "InputVoltage1": 24.0,
+    "VoltageConversionRatio0": 13.0,
+    "VoltageConversionRatio1": 13.0,
+    "InputTolerance0": 10.0,
+    "InputTolerance1": 5.0,
+    "PerPortImaxBank0": 2,
+    "PerPortImaxBank1": 2,
+    "MinReadableCurrent": 0.0
+  }
+}

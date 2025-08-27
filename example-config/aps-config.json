@@ -1,0 +1,36 @@
+{
+  "aps_config": {
+    "HTTP": {
+      "username": "admin",
+      "password": "microchip",
+      "port": "8080"
+    },
+    "LOG": {
+      "log_type": "Y_LOG_MODE_FILE",
+      "log_file": "/tmp/aps.log",
+      "log_level": "Y_LOG_LEVEL_DEBUG"
+    },
+    "SPI": {
+      "spi_check_interval_us": "10"
+    },
+    "module0": {
+      "VoltageConversionRatio0": "13.0",
+      "InputVoltage0": "12.00",
+      "InputTolerance0": "5.00",
+      "MinReadableCurrent": "0.10",
+      "CurrentConversionRatio": "5.0",
+      "Polarity": "1",
+      "MVoltToAmpere": "0.40",
+      "StartAdcValuePort0": "0",
+      "StartAdcValuePort1": "0",
+      "StartAdcValuePort2": "0",
+      "StartAdcValuePort3": "0",
+      "StartAdcValuePort4": "0",
+      "StartAdcValuePort5": "0",
+      "StartAdcValuePort6": "0",
+      "StartAdcValuePort7": "0",
+      "VMin": "5",
+      "VMax": "25"
+    }
+  }
+}
