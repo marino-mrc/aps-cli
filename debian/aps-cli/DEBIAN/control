@@ -1,9 +1,0 @@
-Package: aps-cli
-Version: 0.1.0-1
-Architecture: arm64
-Maintainer: Marco Marino <marino.mrc@gmail.com>
-Installed-Size: 28247
-Section: utils
-Priority: optional
-Description: APS CLI Tool
- Typer-based CLI for APS.

@@ -1,4 +1,0 @@
-export APS_URL="http://127.0.0.1:8080"
-export APS_USERNAME="admin"
-export APS_PASSWORD="microchip"
-export APS_DEBUG=0
