@@ -1,9 +1,17 @@
 #!/bin/bash
 set -e
+echo "Installing the aps utility"
+cat <<'EOF' > /usr/bin/aps
+#!/bin/sh
+exec /opt/venvs/aps-cli/bin/aps "$@"
+EOF
+
+chmod +x /usr/bin/aps
 
 # Install bash completion for aps
+echo "Configuring bash completion for aps"
 if command -v aps >/dev/null 2>&1; then
-    aps --install-completion bash > /etc/bash_completion.d/aps-cli
+    aps --show-completion | sudo tee /etc/bash_completion.d/aps-cli
 fi
 
 exit 0
