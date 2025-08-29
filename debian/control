@@ -1,0 +1,13 @@
+Source: aps-cli
+Section: utils
+Priority: optional
+Maintainer: Marco Marino <marino.mrc@gmail.com>
+Build-Depends: debhelper (>= 9), dh-virtualenv
+Standards-Version: 3.9.5
+
+Package: aps-cli
+Architecture: any
+Depends: ${misc:Depends}
+Description: APS CLI Tool
+ Typer-based CLI for APS.
+

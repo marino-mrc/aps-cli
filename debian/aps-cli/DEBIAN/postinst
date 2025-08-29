@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+# Install bash completion for aps
+if command -v aps >/dev/null 2>&1; then
+    aps --install-completion bash > /etc/bash_completion.d/aps-cli
+fi
+
+exit 0

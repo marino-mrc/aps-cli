@@ -1,0 +1,13 @@
+Package: aps-cli-dbgsym
+Package-Type: ddeb
+Source: aps-cli
+Version: 0.1.0-1
+Auto-Built-Package: debug-symbols
+Architecture: arm64
+Maintainer: Marco Marino <marino.mrc@gmail.com>
+Installed-Size: 62
+Depends: aps-cli (= 0.1.0-1)
+Section: debug
+Priority: optional
+Description: debug symbols for aps-cli
+Build-Ids: 16f83a60028f93230f9066451c69e4036d098291 39820e2913f1c2cd94a3346b46eaaa1a1911f69f

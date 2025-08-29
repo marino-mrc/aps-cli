@@ -1,0 +1,8 @@
+./example-config/12-24-module-config.json
+./example-config/12v-module-config.json
+./example-config/24v-module-config.json
+./example-config/5v-module-config.json
+./example-config/aps-config.json
+./example-config/sample_module_config.json
+./example-config/wrong_module_config_example.json
+./apsrc-example

@@ -80,8 +80,4 @@ poetry install
 poetry shell
 ```
 
-### Building a deb package
-```bash
-sudo apt install dh-virtualenv debhelper devscripts build-essential python3-venv
-dpkg-buildpackage -us -uc    # Inside the aps-cli folder. The package will be created in ~
-```
+
