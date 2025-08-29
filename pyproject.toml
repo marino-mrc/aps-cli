@@ -9,8 +9,9 @@ readme = "README.md"
 aps = "aps_cli.main:app"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.10,<4.0"
 typer = {extras = ["all"], version = "^0.9.0"}
+click = "8.1.7"
 requests = "^2.31.0"
 rich = {extras = ["all"], version = "^13.5.2"}
 ipaddress = "^1.0.23"

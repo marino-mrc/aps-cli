@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from aps_cli import utils, g_vars, config, aps_port, aps_module
 from rich.table import Table
 
-#app = typer.Typer(rich_help_panel=False)
-app = typer.Typer(rich_help_panel=False, no_args_is_help=False)
+app = typer.Typer(rich_help_panel=False)
+#app = typer.Typer(rich_help_panel=False, no_args_is_help=False)
 app.add_typer(aps_port.app, name="port")
 app.add_typer(aps_module.app, name="module")
 app.add_typer(config.app, name="config")
@@ -53,3 +53,7 @@ def status(ctx: typer.Context):
     else:
         message = typer.style(res, fg=typer.colors.RED)
         utils.print_msg(message)
+
+
+if __name__ == "__main__":
+    app()
